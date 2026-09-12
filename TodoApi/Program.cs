@@ -2,19 +2,19 @@ using TodoApi.Dtos;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
+
 
 var todos = new List<TodoGetDto>
 {
@@ -23,6 +23,23 @@ var todos = new List<TodoGetDto>
     new TodoGetDto(3, "Profit!", false)
 };
 
-app.MapGet("/api/todos", () => Results.Ok(todos));
+
+app.MapGet("/api/todos", () =>
+{
+    return Results.Ok(todos);
+});
+
+
+app.MapGet("/api/todos/{id}", (int id) =>
+{
+    var todo = todos.FirstOrDefault(todo => todo.Id == id);
+
+    if (todo == null)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(todo);
+});
 
 app.Run();
